@@ -15,12 +15,13 @@ public class UserTransformer {
                 .build();
     }
     
-    public static UserResponse toDto(User user){
+    public static UserResponse toDto(User user, String token){
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole().toString())
+                .token(token)
                 .build();
     }
 }

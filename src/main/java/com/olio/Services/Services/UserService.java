@@ -39,7 +39,10 @@ public class UserService implements IUserService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = UserTransformer.toEntity(request, encodedPassword);
         User saved = userRepository.save(user);
-        return UserTransformer.toDto(saved);
+
+        String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole().toString());
+
+        return UserTransformer.toDto(saved, token);
     }
 
 //    public UserResponse login(LoginRequest request) {
