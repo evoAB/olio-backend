@@ -40,6 +40,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers("/api/users/become-seller").hasRole("USER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/seller/**").hasRole("SELLER")
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)

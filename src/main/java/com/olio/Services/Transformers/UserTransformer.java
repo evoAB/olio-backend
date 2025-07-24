@@ -3,6 +3,7 @@ package com.olio.Services.Transformers;
 import com.olio.Dto.Request.UserRequest;
 import com.olio.Dto.Response.UserResponse;
 import com.olio.Model.Model.User;
+import com.olio.enums.Role;
 
 public class UserTransformer {
     public static User toEntity(UserRequest request, String encodedPassword){
@@ -10,7 +11,7 @@ public class UserTransformer {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(encodedPassword)
-                .role("USER")
+                .role(Role.valueOf("USER"))
                 .build();
     }
     
@@ -19,7 +20,7 @@ public class UserTransformer {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().toString())
                 .build();
     }
 }

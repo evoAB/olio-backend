@@ -7,6 +7,7 @@ import com.olio.Services.Interface.ICategoryService;
 import com.olio.Services.Services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponse> create(@RequestBody CategoryRequest request) {
         return ResponseEntity.ok(categoryService.createCategory(request));
     }

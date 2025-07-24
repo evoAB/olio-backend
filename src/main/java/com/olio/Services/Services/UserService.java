@@ -8,6 +8,7 @@ import com.olio.Model.Model.User;
 import com.olio.Repository.Repository.UserRepository;
 import com.olio.Services.Interface.IUserService;
 import com.olio.Services.Transformers.UserTransformer;
+import com.olio.enums.Role;
 import com.olio.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +60,9 @@ public class UserService implements IUserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
 
-        return new LoginResponse(user.getName(), user.getEmail(), user.getRole(), token);
+        return new LoginResponse(user.getName(), user.getEmail(), user.getRole().toString(), token);
     }
     public String loginAndGetToken(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -71,6 +72,18 @@ public class UserService implements IUserService {
             throw new RuntimeException("Invalid email or password");
         }
 
-        return jwtUtil.generateToken(user.getEmail(), user.getRole());
+        return jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
+    }
+
+    @Override
+    public void requestToBecomeSeller(String userName){
+        User user = userRepository.findByEmail(userName)
+                .orElseThrow(() -> new RuntimeException("Invalid username"));
+
+        if(user.getRole() == Role.SELLER) throw new IllegalStateException("Already a Seller");
+        if(user.getRole() == Role.PENDING_SELLER) throw new IllegalStateException("Seller request already submitted");
+
+        user.setRole(Role.PENDING_SELLER);
+        userRepository.save(user);
     }
 }

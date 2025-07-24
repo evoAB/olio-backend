@@ -7,7 +7,11 @@ import com.olio.Dto.Response.UserResponse;
 import com.olio.Services.Interface.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,5 +31,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request){
         return ResponseEntity.ok(userService.login(request));
+    }
+
+    @PostMapping("/become-seller")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<String> becomeSeller(@AuthenticationPrincipal UserDetails userDetails){
+        userService.requestToBecomeSeller(userDetails.getUsername());
+        return ResponseEntity.ok("Seller request submitter successfully");
     }
 }

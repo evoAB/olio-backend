@@ -1,5 +1,6 @@
 package com.olio.Model.Model;
 
+import com.olio.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,8 @@ public class User {
 
     private String password;
 
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     private LocalDateTime createdAt;
 

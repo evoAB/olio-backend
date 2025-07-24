@@ -20,9 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService implements IProductService {
 
-//    @Autowired
-//    private ProductMapper productMapper;
-
     @Autowired
     private ProductRepository productRepository;
 
@@ -44,6 +41,30 @@ public class ProductService implements IProductService {
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
+                .map(ProductTransformer::convertEntityToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductResponse> getProductBySearch(String search, String sortBy, String sortOrder, Double minPrice, Double maxPrice){
+        return productRepository.findByNameContainingIgnoreCase(search)
+                .stream()
+                .filter(p-> {
+                    if(minPrice!=null && p.getPrice() < minPrice) return false;
+                    if(maxPrice!=null && p.getPrice() > maxPrice) return false;
+                    return true;
+                })
+                .sorted((p1, p2) -> {
+                    int comparison = 0;
+
+                    if ("price".equalsIgnoreCase(sortBy)) {
+                        comparison = Double.compare(p1.getPrice(), p2.getPrice());
+                    } else if ("name".equalsIgnoreCase(sortBy)) {
+                        comparison = p1.getName().compareToIgnoreCase(p2.getName());
+                    }
+
+                    return "desc".equalsIgnoreCase(sortOrder) ? -comparison : comparison;
+                })
                 .map(ProductTransformer::convertEntityToProductResponse)
                 .collect(Collectors.toList());
     }

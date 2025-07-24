@@ -8,4 +8,6 @@ import com.olio.Dto.Response.UserResponse;
 public interface IUserService {
     UserResponse register(UserRequest request);
     LoginResponse login(LoginRequest request);
+
+    void requestToBecomeSeller(String userName);
 }

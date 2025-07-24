@@ -24,7 +24,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAll() {
+    public ResponseEntity<List<ProductResponse>> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "name") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false, defaultValue = "0.0") Double minPrice,
+            @RequestParam(required = false, defaultValue = "1000000") Double maxPrice
+    ) {
+        if(search!=null && !search.isEmpty())
+            return ResponseEntity.ok(productService.getProductBySearch(search, sortBy, sortOrder, minPrice, maxPrice));
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
