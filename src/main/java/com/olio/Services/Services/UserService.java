@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,5 +90,36 @@ public class UserService implements IUserService {
 
         user.setRole(Role.PENDING_SELLER);
         userRepository.save(user);
+    }
+
+    @Override
+    public List<String> getUsers(){
+        List<User> users = userRepository.findAllByRole(Role.USER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getSellers(){
+        List<User> users = userRepository.findAllByRole(Role.SELLER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getPendingSellers(){
+        List<User> users = userRepository.findAllByRole(Role.PENDING_SELLER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<String> getAdmins(){
+        List<User> users = userRepository.findAllByRole(Role.ADMIN);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
     }
 }

@@ -13,7 +13,6 @@ public class ProductResponse {
     private Double price;
     private String imageUrl;
     private String categoryName;
-
     public void setDescription(String description) {
         this.description = description;
     }

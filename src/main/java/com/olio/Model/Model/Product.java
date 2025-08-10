@@ -63,4 +63,12 @@ public class Product {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id", nullable = true)
+    private User seller;
+
+    @ManyToOne
+    @JoinColumn(name = "buyer_id", nullable = true)
+    private User buyer;
 }

@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -38,5 +40,23 @@ public class UserController {
     public ResponseEntity<String> becomeSeller(@AuthenticationPrincipal UserDetails userDetails){
         userService.requestToBecomeSeller(userDetails.getUsername());
         return ResponseEntity.ok("Seller request submitter successfully");
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<String>> user(){
+        return ResponseEntity.ok(userService.getUsers());
+    }
+
+    @GetMapping("/sellers")
+    public ResponseEntity<List<String>> seller(){
+        return ResponseEntity.ok(userService.getSellers());
+    }
+    @GetMapping("/pending-sellers")
+    public ResponseEntity<List<String>> pendingSeller(){
+        return ResponseEntity.ok(userService.getPendingSellers());
+    }
+    @GetMapping("/admins")
+    public ResponseEntity<List<String>> admin(){
+        return ResponseEntity.ok(userService.getAdmins());
     }
 }

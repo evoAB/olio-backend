@@ -7,6 +7,9 @@ import com.olio.Services.Interface.IProductService;
 import com.olio.Services.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +22,9 @@ public class ProductController {
     private IProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductResponse> create(@RequestBody ProductRequest request) {
-        return ResponseEntity.ok(productService.createProduct(request));
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ProductResponse> create(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.createProduct(request, userDetails.getUsername()));
     }
 
     @GetMapping
@@ -39,6 +43,12 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @GetMapping("/seller")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<List<ProductResponse>> getSellerProducts(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(productService.getProductsBySeller(userDetails.getUsername()));
     }
 
     @PutMapping("/{id}")

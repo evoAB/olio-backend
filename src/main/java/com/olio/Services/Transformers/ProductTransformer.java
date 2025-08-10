@@ -21,6 +21,7 @@ public class ProductTransformer {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
+                .categoryName(product.getCategory().getName())
                 .build();
     }
 }

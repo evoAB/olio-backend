@@ -22,7 +22,7 @@ public class AdminService implements IAdminService {
     @Override
     public void approveSeller(String username){
         User user = userRepository.findByEmail(username)
-                .orElseThrow(()->new RuntimeException("Invalid username"));
+                .orElseThrow(() -> new RuntimeException("Invalid username"));
 
         if(!user.getRole().equals(Role.PENDING_SELLER))
                 throw new IllegalStateException("User has not requested seller access.");

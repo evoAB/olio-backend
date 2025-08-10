@@ -1,6 +1,7 @@
 package com.olio.Services.Services;
 
 import com.olio.Dto.Response.CartResponse;
+import com.olio.Exception.ResourceNotFoundException;
 import com.olio.Model.Model.Cart;
 import com.olio.Model.Model.CartItem;
 import com.olio.Model.Model.Product;
@@ -41,10 +42,16 @@ public class CartService implements ICartService {
 
     @Override
     @Transactional
-    public CartResponse addItemToCart(String email, Long productId, int quantity) {
-        Cart cart = getCartByEmail(email);
+    public CartResponse addItemToCart(String buyerEmail, Long productId, int quantity) {
+        Cart cart = getCartByEmail(buyerEmail);
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new RuntimeException("Product not found"));
+
+        if (product.getBuyer() != null) {
+            throw new RuntimeException("Product already sold");
+        }
+        User buyer = userRepository.findByEmail(buyerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Buyer not found"));
 
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))

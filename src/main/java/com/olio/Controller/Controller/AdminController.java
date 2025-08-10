@@ -22,8 +22,8 @@ public class AdminController {
     }
 
     @PostMapping("/approve-seller/{username}")
-    public ResponseEntity<String> approveSeller(@PathVariable String userName){
-        adminService.approveSeller(userName);
+    public ResponseEntity<String> approveSeller(@PathVariable String username){
+        adminService.approveSeller(username);
         return ResponseEntity.ok("Seller approve successfully.");
     }
 
