@@ -24,4 +24,13 @@ public class UserTransformer {
                 .token(token)
                 .build();
     }
+
+    public static UserResponse convertEntityToUserResponse(User user){
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
+                .build();
+    }
 }

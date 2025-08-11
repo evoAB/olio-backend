@@ -22,6 +22,9 @@ public class ProductTransformer {
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
                 .categoryName(product.getCategory().getName())
+                .sellerName(
+                        product.getSeller() != null ? product.getSeller().getName() : null
+                )
                 .build();
     }
 }

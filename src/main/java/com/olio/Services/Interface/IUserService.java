@@ -10,6 +10,8 @@ import java.util.List;
 public interface IUserService {
     UserResponse register(UserRequest request);
     LoginResponse login(LoginRequest request);
+    List<UserResponse> getAllUser();
+    void deleteUser(Long id);
     void requestToBecomeSeller(String userName);
     List<String> getUsers();
     List<String> getSellers();

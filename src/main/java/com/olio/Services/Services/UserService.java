@@ -7,6 +7,7 @@ import com.olio.Dto.Response.UserResponse;
 import com.olio.Model.Model.User;
 import com.olio.Repository.Repository.UserRepository;
 import com.olio.Services.Interface.IUserService;
+import com.olio.Services.Transformers.ProductTransformer;
 import com.olio.Services.Transformers.UserTransformer;
 import com.olio.enums.Role;
 import com.olio.security.JwtUtil;
@@ -80,6 +81,21 @@ public class UserService implements IUserService {
         return jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
     }
 
+    @Override
+    public List<UserResponse> getAllUser(){
+        return userRepository.findAll()
+                .stream()
+                .map(UserTransformer::convertEntityToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUser(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User Id does not exists"));
+
+        userRepository.delete(user);
+    }
     @Override
     public void requestToBecomeSeller(String userName){
         User user = userRepository.findByEmail(userName)

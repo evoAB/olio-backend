@@ -39,7 +39,18 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> becomeSeller(@AuthenticationPrincipal UserDetails userDetails){
         userService.requestToBecomeSeller(userDetails.getUsername());
-        return ResponseEntity.ok("Seller request submitter successfully");
+        return ResponseEntity.ok("Seller request submitted successfully");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> users(){
+        return ResponseEntity.ok(userService.getAllUser());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users")
