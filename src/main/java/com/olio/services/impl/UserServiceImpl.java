@@ -1,0 +1,138 @@
+package com.olio.services.impl;
+
+import com.olio.dto.Request.LoginRequest;
+import com.olio.dto.Request.UserRequest;
+import com.olio.dto.Response.LoginResponse;
+import com.olio.dto.Response.UserResponse;
+import com.olio.model.User;
+import com.olio.repository.UserRepository;
+import com.olio.services.transformers.UserTransformer;
+import com.olio.enums.Role;
+import com.olio.security.JwtUtil;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserServiceImpl implements com.olio.services.interfaces.UserService {
+    @Autowired
+    private UserRepository userRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public UserResponse register(UserRequest request) {
+        if(userRepository.existsByEmail((request.getEmail()))) {
+            throw new RuntimeException("Email already in use");
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User user = UserTransformer.toEntity(request, encodedPassword);
+        User saved = userRepository.save(user);
+
+        String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole().toString());
+
+        return UserTransformer.toDto(saved, token);
+    }
+
+//    public UserResponse login(LoginRequest request) {
+//        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+//
+//        if(userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
+//            throw new RuntimeException("Invalid email or password");
+//        }
+//
+//        return UserTransformer.toDto(userOpt.get());
+//    }
+
+    public LoginResponse login(LoginRequest request){
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
+
+        return new LoginResponse(user.getName(), user.getEmail(), user.getRole().toString(), token);
+    }
+    public String loginAndGetToken(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        return jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
+    }
+
+    @Override
+    public List<UserResponse> getAllUser(){
+        return userRepository.findAll()
+                .stream()
+                .map(UserTransformer::convertEntityToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUser(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User Id does not exists"));
+
+        userRepository.delete(user);
+    }
+    @Override
+    public void requestToBecomeSeller(String userName){
+        User user = userRepository.findByEmail(userName)
+                .orElseThrow(() -> new RuntimeException("Invalid username"));
+
+        if(user.getRole() == Role.SELLER) throw new IllegalStateException("Already a Seller");
+        if(user.getRole() == Role.PENDING_SELLER) throw new IllegalStateException("Seller request already submitted");
+
+        user.setRole(Role.PENDING_SELLER);
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<String> getUsers(){
+        List<User> users = userRepository.findAllByRole(Role.USER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getSellers(){
+        List<User> users = userRepository.findAllByRole(Role.SELLER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getPendingSellers(){
+        List<User> users = userRepository.findAllByRole(Role.PENDING_SELLER);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<String> getAdmins(){
+        List<User> users = userRepository.findAllByRole(Role.ADMIN);
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+}

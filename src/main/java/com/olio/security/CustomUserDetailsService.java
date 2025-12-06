@@ -1,7 +1,7 @@
 package com.olio.security;
 
-import com.olio.Model.Model.User;
-import com.olio.Repository.Repository.UserRepository;
+import com.olio.model.User;
+import com.olio.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
