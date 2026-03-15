@@ -1,12 +1,11 @@
 package com.olio.services.impl;
 
-import com.olio.model.Cart;
-import com.olio.model.Order;
-import com.olio.model.OrderItem;
-import com.olio.model.User;
+import com.olio.model.*;
 import com.olio.repository.CartRepository;
 import com.olio.repository.OrderRepository;
+import com.olio.repository.ProductRepository;
 import com.olio.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,25 +18,47 @@ public class OrderServiceImpl implements com.olio.services.interfaces.OrderServi
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Override
+    @Transactional
     public Order placeOrder(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Cart cart = cartRepository.findByUser(user).orElseThrow();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        if(cart.getItems().isEmpty())
+            throw new RuntimeException("Cart is Empty");
 
         Order order = new Order();
         order.setUser(user);
         order.setCreatedAt(LocalDateTime.now());
         order.setTotal(cart.getTotal());
 
-        List<OrderItem> items = cart.getItems().stream().map(cartItem -> OrderItem.builder()
+        List<OrderItem> items = cart.getItems().stream().map(cartItem -> {
+            Product product = cartItem.getProduct();
+            Integer quantity = productRepository.findById(product.getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"))
+                    .getQuantity();
+
+            if(product.getQuantity() < quantity){
+                throw new RuntimeException("Not enough stock for quantity : " + product.getName());
+            }
+
+            return OrderItem.builder()
                 .order(order)
-                .product(cartItem.getProduct())
+                .product(product)
                 .quantity(cartItem.getQuantity())
-                .price(cartItem.getProduct().getPrice())
-                .build()).toList();
+                .price(product.getPrice())
+                .build();
+        }).toList();
 
         order.setItems(items);
+        order.setTotal(items.stream()
+                .mapToDouble(i -> i.getPrice() * i.getQuantity())
+                .sum()
+        );
 
         cart.getItems().clear();
         cart.setTotal(0.0);

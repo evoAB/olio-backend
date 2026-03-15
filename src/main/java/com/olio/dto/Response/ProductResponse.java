@@ -12,6 +12,7 @@ public class ProductResponse {
     private String description;
     private Double price;
     private String imageUrl;
+    private Integer quantity;
     private String categoryName;
     private String sellerName;
     public void setDescription(String description) {

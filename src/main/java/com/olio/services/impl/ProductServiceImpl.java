@@ -110,6 +110,7 @@ public class ProductServiceImpl implements com.olio.services.interfaces.ProductS
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setImageUrl(request.getImageUrl());
+        product.setQuantity(request.getQuantity());
         product.setCategory(category);
 
         return ProductTransformer.convertEntityToProductResponse(productRepository.save(product));

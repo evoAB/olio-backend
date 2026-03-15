@@ -11,6 +11,7 @@ public class ProductTransformer {
                 .description(productRequest.getDescription())
                 .price(productRequest.getPrice())
                 .imageUrl(productRequest.getImageUrl())
+                .quantity(productRequest.getQuantity())
                 .build();
     }
 
@@ -21,6 +22,7 @@ public class ProductTransformer {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .imageUrl(product.getImageUrl())
+                .quantity(product.getQuantity())
                 .categoryName(product.getCategory().getName())
                 .sellerName(
                         product.getSeller() != null ? product.getSeller().getName() : null

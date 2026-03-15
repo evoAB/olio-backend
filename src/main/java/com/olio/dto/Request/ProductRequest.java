@@ -20,6 +20,8 @@ public class ProductRequest {
 
     private String imageUrl;
 
+    private Integer quantity;
+
     @NotNull
     private Long categoryId;
 
@@ -42,4 +44,5 @@ public class ProductRequest {
     public String getImageUrl() {
         return imageUrl;
     }
+    public Integer getQuantity() { return quantity; }
 }

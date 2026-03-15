@@ -23,6 +23,8 @@ public class Product {
 
     private String imageUrl;
 
+    private Integer quantity;
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     @JsonIgnore
@@ -63,6 +65,10 @@ public class Product {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public Integer getQuantity() { return quantity; }
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = true)
