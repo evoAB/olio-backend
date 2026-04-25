@@ -13,6 +13,7 @@ import com.olio.repository.UserRepository;
 import com.olio.services.transformers.ProductTransformer;
 import com.olio.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements com.olio.services.interfaces.ProductS
 
     @Autowired
     private CategoryRepository categoryRepository;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -49,6 +51,7 @@ public class ProductServiceImpl implements com.olio.services.interfaces.ProductS
     }
 
     @Override
+    @Cacheable(value = "products")
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()

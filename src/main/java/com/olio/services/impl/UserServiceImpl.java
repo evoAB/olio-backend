@@ -6,6 +6,7 @@ import com.olio.dto.Response.LoginResponse;
 import com.olio.dto.Response.UserResponse;
 import com.olio.model.User;
 import com.olio.repository.UserRepository;
+import com.olio.services.interfaces.UserService;
 import com.olio.services.transformers.UserTransformer;
 import com.olio.enums.Role;
 import com.olio.security.JwtUtil;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserServiceImpl implements com.olio.services.interfaces.UserService {
+public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
